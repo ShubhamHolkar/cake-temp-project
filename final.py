@@ -10,7 +10,7 @@ from datetime import timedelta
 import datetime
 import pyautogui
 import sqlite3
-
+common=None
 dic = []
 weight=None
 sr=None
@@ -1472,6 +1472,7 @@ def conform():
         global weight
         global amount
         global image
+        global common
         data1 = request.forms.get('name')
         data4 = request.forms.get('od')
         data5 = request.forms.get('address')
@@ -1498,7 +1499,7 @@ def conform():
 
 
         if data6=='bt2':
-
+            common=cake
             con = sqlite3.connect("arya_cakes_magic")
             query = "INSERT INTO `order` (customer, email, number, location, cake, orderdate, weight, amount,image) VALUES (?, ?, ?, ?, ?, ?, ?, ?,?)"
             values = (customer, email, number, location, cake, date, weight, amount,image)
@@ -1521,6 +1522,7 @@ def conform():
             query = "INSERT INTO `order` (customer, email, number, location, cake, orderdate, weight, amount,image) VALUES (?, ?, ?, ?, ?, ?, ?, ?,?)"
             values = (customer, email, number, location, cake, date, weight, amount, image)
             con.execute(query, values)
+
             con.commit()
             con.close()
             print(data6)
@@ -1661,37 +1663,29 @@ def page():
 
 @route('/table', method='post')
 def table():
-        global dic
-        global i
-        global customer
-        global email
-        global number
-        global location
         global cake
-        global date
         global weight
-        global amount
-        data1 = request.forms.get('name')
-        data4 = request.forms.get('od')
-        data5 = request.forms.get('address')
+
+        global dic,i
         data6 = request.forms.get('status')
 
-        d1 = str(data1)
-        d2 = str(data4)
-        d3 = str(data5)
-        customer = d1
-        date = d2
-        location = d3
-        con = sqlite3.connect("arya_cakes_magic")
-        mycur = con.cursor()
-        query = "select phone from customer where email='" + email + "';"
-        mycur.execute(query)
-        output = mycur.fetchone()
-        output = str(output[0])
-        print(output)
-        number = output
-        con.commit()
-        con.close()
+        if data6=='accept':
+            con = sqlite3.connect("arya_cakes_magic")
+            query = "INSERT INTO `accept` (customer, email, location, cake, orderdate, weight, amount) VALUES (?, ?, ?, ?, ?, ?, ?)"
+            values = (customer, email, location, cake, date, weight, str(amount))
+            con.execute(query, values)
+            con.commit()
+            dic.pop(0)
+            con.close()
+            return orders()
+        if data6=='reject':
+            con = sqlite3.connect("arya_cakes_magic")
+            query = "INSERT INTO `reject` (customer, email, location, cake, orderdate, amount) VALUES (?, ?, ?, ?, ?, ?)"
+            values = (customer, email, location, common, date, str(amount))
+            con.execute(query, values)
+            con.commit()
+            dic.pop(0)
+            return orders()
 
 
 
