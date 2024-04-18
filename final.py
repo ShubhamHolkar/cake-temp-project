@@ -25,6 +25,51 @@ location=None
 number=None
 cake=None
 amount=None
+
+def create_tables():
+    conn = sqlite3.connect('arya_cakes_magic')
+    c = conn.cursor()
+    
+    # Execute each CREATE TABLE query
+    c.execute('''CREATE TABLE IF NOT EXISTS accept (
+                    customer VARCHAR (50),
+                    email VARCHAR (40),
+                    number VARCHAR (10),
+                    location VARCHAR (100),
+                    cake VARCHAR (50),
+                    orderdate VARCHAR (10),
+                    weight VARCHAR,
+                    amount VARCHAR,
+                    payment VARCHAR (50)
+                )''')
+    
+    c.execute('''CREATE TABLE IF NOT EXISTS customer (
+                    email VARCHAR (30) PRIMARY KEY NOT NULL UNIQUE,
+                    passwd VARCHAR (20) NOT NULL,
+                    phone NUMERIC (10) NOT NULL,
+                    dob VARCHAR (8) NOT NULL,
+                    age NUMERIC (3) NOT NULL
+                )''')
+
+    c.execute('''CREATE TABLE IF NOT EXISTS [order] (
+                    customer VARCHAR (35),
+                    email VARCHAR (40),
+                    number VARCHAR (10),
+                    location VARCHAR (100),
+                    cake VARCHAR,
+                    orderdate VARCHAR (12),
+                    weight INTEGER (5),
+                    amount VARCHAR (5),
+                    image BLOB,
+                    status VARCHAR (50),
+                    payment VARCHAR (15)
+                )''')
+
+    conn.commit()
+    conn.close()
+
+create_tables()
+
 @route('/orders')
 def orders():
 
@@ -1382,6 +1427,8 @@ def logpage():
     mail=request.forms.get('signin')
     if (mail=="sign"):
         return template('signin')
+
+
 
 @route('/signin',method='post')
 def dataentry():
